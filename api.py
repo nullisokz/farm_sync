@@ -14,7 +14,7 @@ model = joblib.load(os.path.join(current_dir, "models/random_forest_crop.joblib"
 scaler = joblib.load(os.path.join(current_dir, "models/scaler.joblib"))
 
 def get_connection():
-    conn = sqlite3.connect("predicitons.db")
+    conn = sqlite3.connect("predictions.db")
     conn.row_factory = sqlite3.Row
     return conn
 
@@ -23,17 +23,19 @@ def Write_to_db(data, prediction):
         conn = get_connection()
         cursor = conn.cursor()
         cursor.execute("""
-                INSERT INTO predictions (N, P, K, temperature, humidity, ph, rainfall, predicted_yield, crop)
+                INSERT INTO predictions (N, P, K,  humidity,  rainfall,temperature, crop, ph,name)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
                 data['N'],
                 data['P'],
                 data['K'],
-                data['temperature'],
                 data['humidity'],
-                data['ph'],
                 data['rainfall'],
-                prediction         
+                data['temperature'],
+                prediction,
+                data['ph'],
+                data['name']
+                          
             ))
         conn.commit()
         conn.close()
@@ -56,7 +58,7 @@ def predict():
         features_scaled = scaler.transform(features)
         prediction = model.predict(features_scaled)
 
-        Write_to_db(data,prediction)
+        Write_to_db(data,prediction[0])
 
         return jsonify({
             'prediction': prediction[0],
