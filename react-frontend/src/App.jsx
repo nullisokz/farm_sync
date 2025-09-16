@@ -10,6 +10,7 @@ function App() {
   const [rainfall, setRainfall] = useState(70);
   const [temperature, setTemperature] = useState(20);
   const [result, setResult] = useState(null);
+  const [name, setName] = useState("")
 
   async function handlePredict() {
     try {
@@ -23,7 +24,9 @@ function App() {
           humidity,
           ph,
           rainfall,
-          temperature,  
+          temperature,
+          name
+            
         }),
       });
       const data = await res.json();
@@ -36,7 +39,7 @@ function App() {
   return (
     <>
       <div className='main'>
-        <label>Name: </label><input type='textbox'></input>
+        <label>Name: </label><input onChange={(e) => setName(e.target.value)} type='textbox'></input>
         <div className='value-card'>
           <h2>Soil values</h2>
           <label>Nitrogen: {N}</label>
