@@ -1,29 +1,29 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 
 function App() {
-  const [nitrogen, setNitrogen] = useState(50);
-  const [phosphorus, setPhosphorus] = useState(30);
-  const [potassium, setPotassium] = useState(70);
+  const [N, setN] = useState(50);
+  const [P, setP] = useState(30);
+  const [K, setK] = useState(70);
   const [humidity, setHumidity] = useState(50);
   const [ph, setPh] = useState(30);
   const [rainfall, setRainfall] = useState(70);
+  const [temperature, setTemperature] = useState(20);
   const [result, setResult] = useState(null);
 
   async function handlePredict() {
     try {
-      const res = await fetch("http://localhost:8000/predict", {
+      const res = await fetch("http://localhost:5000/predict", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          nitrogen,
-          phosphorus,
-          potassium,
+          N,
+          P,
+          K,
           humidity,
           ph,
           rainfall,
+          temperature,  
         }),
       });
       const data = await res.json();
@@ -39,34 +39,34 @@ function App() {
         <label>Name: </label><input type='textbox'></input>
         <div className='value-card'>
           <h2>Soil values</h2>
-          <label>Nitrogen: {nitrogen}</label>
+          <label>Nitrogen: {N}</label>
           <input
             type="range"
             min="0"
             max="140"
             step="1"
-            value={nitrogen}
-            onChange={(e) => setNitrogen(Number(e.target.value))}
+            value={N}
+            onChange={(e) => setN(Number(e.target.value))}
           />
 
-          <label>Phosphorus: {phosphorus}</label>
+          <label>Phosphorus: {P}</label>
           <input
             type="range"
             min="5"
             max="145"
             step="1"
-            value={phosphorus}
-            onChange={(e) => setPhosphorus(Number(e.target.value))}
+            value={P}
+            onChange={(e) => setP(Number(e.target.value))}
           />
 
-          <label>Potassium: {potassium}</label>
+          <label>Potassium: {K}</label>
           <input
             type="range"
             min="5"
             max="205"
             step="1"
-            value={potassium}
-            onChange={(e) => setPotassium(Number(e.target.value))}
+            value={K}
+            onChange={(e) => setK(Number(e.target.value))}
           />
       </div>
       
@@ -75,9 +75,9 @@ function App() {
           <label>Humidity: {humidity}</label>
           <input
             type="range"
-            min="14.25803981"
-            max="99.98187601"
-            step="1"
+            min="14.25"
+            max="99.98"
+            step="0.01"
             value={humidity}
             onChange={(e) => setHumidity(Number(e.target.value))}
           />
@@ -85,9 +85,9 @@ function App() {
           <label>PH: {ph}</label>
           <input
             type="range"
-            min="3.504752314"
-            max="20.21126747"
-            step="1"
+            min="3.50"
+            max="20.21"
+            step="0.01"
             value={ph}
             onChange={(e) => setPh(Number(e.target.value))}
           />
@@ -95,11 +95,21 @@ function App() {
           <label>Rainfall: {rainfall}</label>
           <input
             type="range"
-            min="20.21126747"
-            max="298.5601175"
-            step="1"
+            min="20.21"
+            max="298.56"
+            step="0.01"
             value={rainfall}
             onChange={(e) => setRainfall(Number(e.target.value))}
+          />
+
+          <label>Temp: {temperature}</label>
+          <input
+            type="range"
+            min="8.82"
+            max="43.67"
+            step="0.01"
+            value={temperature}
+            onChange={(e) => setTemperature(Number(e.target.value))}
           />
       </div>
       <div>
