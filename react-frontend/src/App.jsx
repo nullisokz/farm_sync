@@ -3,6 +3,7 @@ import './App.css'
 import DrawingGate from './DrawingGate'
 import { API_BASE } from "./lib/apiBase";
 
+import cropImageMap from './assets/cropImageMap'
 
 function App() {
   const [verified, setVerified] = useState(false);
@@ -38,15 +39,21 @@ function App() {
   if (!verified) {
     return (
       <div className="main">
-        <h1>AI-check</h1>
-        <p>För att komma in: rita rätt siffra.</p>
-        <DrawingGate apiBase={API_BASE} onPassed={() => setVerified(true)} />
+        <h1>AI-check, Don't be a Apple</h1>
+        <p>To enter: draw the correct number.</p>
+        <DrawingGate apiBase="http://localhost:5000" onPassed={() => setVerified(true)} />
       </div>
     );
   }
 
-  return (
+  function getCropImage(prediction) {
+    if (!prediction) return null;
+    const key = prediction.replace(/\s+/g, '').toLowerCase();
+    const filename = cropImageMap[key];
+    return filename ? `/images_flat/${filename}` : null;
+  }
 
+  return (
     <div className='main'>
       <label>Name: </label>
       <input onChange={(e) => setName(e.target.value)} type='textbox' />
@@ -90,6 +97,13 @@ function App() {
             <div className="success-result">
               <div className="crop-prediction">
                 <h3>Recommended Crop: <span className="crop-name">{result.prediction}</span></h3>
+                {/* Show crop image under the name */}
+                <img
+                  className='crop-image'
+                  src={getCropImage(result.prediction)}
+                  alt={result.prediction}
+                  onError={e => { e.target.style.display = 'none'; }}
+                />
               </div>
               {name && <p>👤 Farmer: {name}</p>}
               <div className="input-summary">

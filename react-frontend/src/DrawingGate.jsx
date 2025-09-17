@@ -74,15 +74,13 @@ export default function DrawingGate({ apiBase = API_BASE, onPassed }) {
 
       if (data.status === "success") {
         if (data.passed) {
-          const p = typeof data.prob === "number" ? data.prob.toFixed(2) : "–";
-          setMsg(`✅ Rätt! ${data.pred} (p=${p}).`);
+          setMsg(`✅ Correct! ${data.pred} (p=${data.prob.toFixed(2)}).`);
           onPassed?.();
         } else {
-          const p = typeof data.prob === "number" ? data.prob.toFixed(2) : "–";
-          setMsg(`❌ Incorrect ${data.pred} (p=${p}). Try again!`);
+          setMsg(`❌ Incorrect! ${data.pred} (p=${data.prob?.toFixed(2) ?? "–"}). Try again!`);
         }
       } else {
-        setMsg(`Error: ${data.error || "unknown error"}`);
+        setMsg(`Error: ${data.error || "Unknown error"}`);
       }
     } catch (err) {
       console.error(err);
@@ -100,7 +98,7 @@ export default function DrawingGate({ apiBase = API_BASE, onPassed }) {
 
   return (
     <div className="gate-wrap">
-      <h2>Rita siffran: <span className="gate-target">{target}</span></h2>
+      <h2>Draw the number: <span className="gate-target">{target}</span></h2>
       <canvas
         ref={canvasRef}
         width={280}
@@ -120,7 +118,7 @@ export default function DrawingGate({ apiBase = API_BASE, onPassed }) {
         <button onClick={submitDrawing} disabled={loading}>{loading ? "Checking…" : "Submit"}</button>
       </div>
       {msg && <p className="gate-msg">{msg}</p>}
-      <p className="gate-hint">Tips: Draw with thick, continuous lines.</p>
+      <p className="gate-hint">Tip: Draw with thick, continuous lines.</p>
     </div>
   );
 }
