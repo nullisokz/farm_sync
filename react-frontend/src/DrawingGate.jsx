@@ -74,17 +74,17 @@ export default function DrawingGate({ apiBase = "http://localhost:5000", onPasse
 
       if (data.status === "success") {
         if (data.passed) {
-          setMsg(`✅ Rätt! ${data.pred} (p=${data.prob.toFixed(2)}).`);
+          setMsg(`✅ Correct! ${data.pred} (p=${data.prob.toFixed(2)}).`);
           onPassed?.();
         } else {
-          setMsg(`❌ Blev ${data.pred} (p=${data.prob?.toFixed(2) ?? "–"}). Försök igen!`);
+          setMsg(`❌ Incorrect! ${data.pred} (p=${data.prob?.toFixed(2) ?? "–"}). Try again!`);
         }
       } else {
-        setMsg(`Fel: ${data.error || "okänt fel"}`);
+        setMsg(`Error: ${data.error || "Unknown error"}`);
       }
     } catch (err) {
       console.error(err);
-      setMsg("Nätverksfel.");
+      setMsg("Network error.");
     } finally {
       setLoading(false);
     }
@@ -98,7 +98,7 @@ export default function DrawingGate({ apiBase = "http://localhost:5000", onPasse
 
   return (
     <div className="gate-wrap">
-      <h2>Rita siffran: <span className="gate-target">{target}</span></h2>
+      <h2>Draw the number: <span className="gate-target">{target}</span></h2>
       <canvas
         ref={canvasRef}
         width={280}
@@ -113,12 +113,12 @@ export default function DrawingGate({ apiBase = "http://localhost:5000", onPasse
         onTouchEnd={handleUp}
       />
       <div className="gate-actions">
-        <button onClick={clearCanvas} disabled={loading}>Rensa</button>
-        <button onClick={newTarget} disabled={loading}>Ny siffra</button>
-        <button onClick={submitDrawing} disabled={loading}>{loading ? "Kollar…" : "Skicka"}</button>
+        <button onClick={clearCanvas} disabled={loading}>Clear</button>
+        <button onClick={newTarget} disabled={loading}>New Number</button>
+        <button onClick={submitDrawing} disabled={loading}>{loading ? "Checking…" : "Submit"}</button>
       </div>
       {msg && <p className="gate-msg">{msg}</p>}
-      <p className="gate-hint">Tips: Rita med tjocka, sammanhängande streck.</p>
+      <p className="gate-hint">Tip: Draw with thick, continuous lines.</p>
     </div>
   );
 }

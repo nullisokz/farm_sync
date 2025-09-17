@@ -1,0 +1,26 @@
+const cropImageMap = {
+  apple: "apple.jpg",
+  banana: "banana.jpg",
+  blackgram: "blackgram.jpg",
+  chickpea: "chickpea.jpg",
+  coconut: "coconut.jpg",
+  coffee: "coffee.jpg",
+  cotton: "cotton.jpg",
+  grapes: "grapes.jpg",
+  jute: "jute.jpg",
+  kidneybeans: "kidneybeans.jpg",
+  lentil: "lentil.jpg",
+  maize: "maize.jpg",
+  mango: "mango.jpg",
+  mothbeans: "mothbeans.jpg",
+  mungbean: "mungbean.jpg",
+  muskmelon: "muskmelon.jpg",
+  orange: "orange.jpg",
+  papaya: "papaya.jpg",
+  pigeonpeas: "pigeonpeas.jpg",
+  pomegranate: "pomegranate.jpg",
+  rice: "rice.jpg",
+  watermelon: "watermelon.jpg",
+};
+
+export default cropImageMap;
