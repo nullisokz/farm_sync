@@ -64,6 +64,11 @@ def Write_to_db(data, prediction):
 def predict():
     try:
         data = request.json
+        if data is None:
+            return jsonify({
+                "error": "No JSON data provided",
+                "status": "error"
+            }), 400
         features = np.array([[
             data['N'], data['P'], data['K'],
             data['temperature'], data['humidity'],
@@ -100,7 +105,7 @@ def _decode_data_url_png(data_url: str) -> bytes:
 
 def _prepare_28x28(img_bytes: bytes, invert=True, binarize=False, threshold=128):
     img = Image.open(io.BytesIO(img_bytes)).convert("L")  # gråskala
-    img = img.resize((28, 28), Image.BILINEAR)
+    img = img.resize((28, 28), Image.Resampling.BILINEAR)
     if invert:
         img = ImageOps.invert(img)  # vår canvas: svart på vit -> MNIST: vit på svart
     arr2d = np.array(img, dtype=np.float32)
