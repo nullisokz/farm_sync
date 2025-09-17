@@ -56,7 +56,7 @@ export default function DrawingGate({ apiBase = "http://localhost:5000", onPasse
       setLoading(true);
       setMsg("");
 
-      // Skala till 28x28 PNG dataURL
+      // scale to 28x28 PNG dataURL
       const src = canvasRef.current;
       const small = document.createElement("canvas");
       small.width = 28; small.height = 28;

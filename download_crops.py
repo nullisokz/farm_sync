@@ -1,13 +1,13 @@
 # download_crops.py
-# Hämtar 1 bild per gröda och sparar som <namn>.jpg i images_flat/
-# Kräver: pip install bing-image-downloader pillow
+# Gets images of crops from Bing and saves them as .jpg in images_flat/
+# Needs: pip install bing-image-downloader pillow
 
 import os
 import shutil
 from pathlib import Path
 from PIL import Image
 
-# 1) Ditt urval
+# 1) your crops here (should match what the model predicts)
 items = [
     "rice",
     "maize",
@@ -33,7 +33,7 @@ items = [
     "coffee",
 ]
 
-# 2) Bättre sökfraser (så vi får rätt typ av bild)
+# 2) Better search phrases (to get the right type of image)
 query_map = {
     "rice": "rice plant field",
     "maize": "maize corn plant field",
@@ -59,24 +59,24 @@ query_map = {
     "coffee": "coffee plant coffee cherries",
 }
 
-# 3) Import och ev. auto-install
+# 3) Import and possibly auto-install
 try:
     from bing_image_downloader import downloader
 except ImportError:
     raise SystemExit(
-        "Package 'bing-image-downloader' saknas.\n"
-        "Installera med:  pip install bing-image-downloader pillow"
+        "Package 'bing-image-downloader' is missing.\n"
+        "Install with:  pip install bing-image-downloader pillow"
     )
 
 BASE_DIR = Path(__file__).resolve().parent
-RAW_DIR = BASE_DIR / "images"         # här skapar paketet undermappar per sökord
-FLAT_DIR = BASE_DIR / "images_flat"   # färdiga .jpg med rätt namn
+RAW_DIR = BASE_DIR / "images"         # here the package creates subfolders per search term
+FLAT_DIR = BASE_DIR / "images_flat"   # finished .jpg with correct names
 RAW_DIR.mkdir(exist_ok=True)
 FLAT_DIR.mkdir(exist_ok=True)
 
 def download_one(query: str, limit: int = 1):
     """
-    Hämtar 'limit' bilder för given sökfråga in i en undermapp under RAW_DIR.
+    Gets 'limit' images for given search term into a subfolder under RAW_DIR.
     """
     downloader.download(
         query=query,
@@ -94,7 +94,7 @@ def first_file_in(folder: Path):
     for p in folder.iterdir():
         if p.is_file():
             return p
-        # paketet lägger ofta bilder i ytterligare en nivå (t.ex. 'Image_1.jpg')
+        # the package often puts images in an additional level (e.g. 'Image_1.jpg')
         if p.is_dir():
             for f in p.iterdir():
                 if f.is_file():
@@ -103,8 +103,8 @@ def first_file_in(folder: Path):
 
 def to_jpg(src_path: Path, dst_path: Path):
     """
-    Konverterar (eller kopierar) till .jpg med PIL för stabilt format och
-    byter färgläge om nödvändigt.
+    Converts (or copies) to .jpg with PIL for stable format and
+    changes color mode if necessary.
     """
     try:
         with Image.open(src_path) as im:
@@ -112,34 +112,34 @@ def to_jpg(src_path: Path, dst_path: Path):
                 im = im.convert("RGB")
             im.save(dst_path, format="JPEG", quality=90, optimize=True)
     except Exception:
-        # Om PIL inte kan öppna filen, gör en ren kopia (kan vara redan .jpg)
+        # If PIL cannot open the file, make a clean copy (might already be .jpg)
         shutil.copy2(src_path, dst_path)
 
 def main():
     for item in items:
         query = query_map.get(item, item)
         print(f"\n=== Hämtar: {item} | sökfråga: '{query}' ===")
-        # 1) Ladda ner
+        # 1) Download
         download_one(query, limit=1)
 
-        # 2) Hitta första filen som laddats ned
-        # bing_image_downloader skapar mapp med exakt query-namnet
+        # 2) Find the first downloaded file
+        # bing_image_downloader creates a folder with the exact query name
         query_folder = RAW_DIR / query
         src = first_file_in(query_folder)
         if not src:
-            # fallback: ibland används item som mappnamn
+            # fallback: sometimes item is used as folder name
             src = first_file_in(RAW_DIR / item)
 
         if not src:
-            print(f"❗ Kunde inte hitta nerladdad bild för: {item}")
+            print(f"❗ Could not find downloaded image for: {item}")
             continue
 
-        # 3) Spara som <item>.jpg i images_flat/
+        # 3) Save as <item>.jpg in images_flat/
         dst = FLAT_DIR / f"{item}.jpg"
         to_jpg(src, dst)
-        print(f"✅ Sparad: {dst}")
+        print(f"✅ Saved: {dst}")
 
-    print("\nKlart! Alla bilder (så många som gick att hämta) finns i:", FLAT_DIR)
+    print("\nDone! All images (as many as could be fetched) are in:", FLAT_DIR)
 
 if __name__ == "__main__":
     main()
