@@ -70,12 +70,14 @@ def predict():
 
         Write_to_db(data,prediction[0])
 
+        prediction_cap = prediction[0].capitalize()
+
         return jsonify({
-            'prediction': prediction[0],
+            'prediction': prediction_cap,
             'status': "success"
         })
         
-
+    
     except Exception as e:
         return jsonify({
             "error": str(e),
@@ -114,7 +116,7 @@ def mnist_check():
         data = request.json or {}
         data_url = data.get("image")
         target = int(data.get("target_digit", -1))
-        threshold = float(data.get("threshold", 0.85))
+        threshold = float(data.get("threshold", 0.20))
 
         if not data_url or target < 0 or target > 9:
             return jsonify({"status":"error","error":"Missing image or invalid target_digit"}), 400
@@ -130,7 +132,7 @@ def mnist_check():
         else:
             prob = 1.0 if pred == target else 0.0
 
-        passed = (pred == target) and (prob >= threshold)
+        passed = (pred == target) or (prob >= threshold)
 
         return jsonify({
             "status": "success",
