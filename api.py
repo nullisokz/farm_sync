@@ -23,7 +23,7 @@ def Write_to_db(data, prediction):
         conn = get_connection()
         cursor = conn.cursor()
         cursor.execute("""
-                INSERT INTO predictions (N, P, K,  humidity,  rainfall,temperature, crop, ph,name)
+                INSERT INTO predictions (N, P, K,  humidity, rainfall, temperature, crop, ph, name)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
                 data['N'],
@@ -35,7 +35,6 @@ def Write_to_db(data, prediction):
                 prediction,
                 data['ph'],
                 data['name']
-                          
             ))
         conn.commit()
         conn.close()
@@ -65,7 +64,6 @@ def predict():
             'status': "success"
         })
         
-
     except Exception as e:
         return jsonify({
             "error": str(e),
