@@ -55,7 +55,7 @@ def Write_to_db(data, prediction):
         return False
 
 
-@app.route("/predict", methods=['POST'])
+@app.route("/api/predict", methods=['POST'])
 def predict():
     try:
         data = request.json
@@ -101,7 +101,7 @@ def _prepare_28x28(img_bytes: bytes, invert=True, binarize=False, threshold=128)
     X = arr2d.reshape(1, -1)  # (1, 784)
     return X, arr2d
 
-@app.route("/mnist/check", methods=["POST"])
+@app.route("/api/mnist/check", methods=["POST"])
 def mnist_check():
     """
     Body JSON:
