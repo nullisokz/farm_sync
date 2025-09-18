@@ -4,8 +4,6 @@ import DrawingGate from './DrawingGate'
 import { API_BASE } from "./lib/apiBase";
 import cropImageMap from './assets/cropImageMap';
 
-import cropImageMap from './assets/cropImageMap'
-
 function App() {
   const [verified, setVerified] = useState(false);
 
