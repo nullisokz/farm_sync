@@ -3,6 +3,7 @@ import './App.css'
 import DrawingGate from './DrawingGate'
 import { API_BASE } from "./lib/apiBase";
 
+
 function App() {
   const [verified, setVerified] = useState(false);
 
@@ -69,7 +70,7 @@ function App() {
         <input type="range" min="14.25" max="99.98" step="0.01" value={humidity} onChange={(e) => setHumidity(Number(e.target.value))} />
 
         <label>PH: {ph}</label>
-        <input type="range" min="3.50" max="20.21" step="0.01" value={ph} onChange={(e) => setPh(Number(e.target.value))} />
+        <input type="range" min="3.50" max="9.93" step="0.01" value={ph} onChange={(e) => setPh(Number(e.target.value))} />
 
         <label>Rainfall: {rainfall}</label>
         <input type="range" min="20.21" max="298.56" step="0.01" value={rainfall} onChange={(e) => setRainfall(Number(e.target.value))} />
