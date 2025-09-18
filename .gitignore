@@ -42,4 +42,4 @@ __pycache__/
 .ipynb_checkpoints/
 
 # Misc
-*.zip
+*.zipaicheck/models/*.joblib
