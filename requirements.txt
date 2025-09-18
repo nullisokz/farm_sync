@@ -5,3 +5,4 @@ flask
 joblib
 flask_cors
 seaborn
+gunicorn

@@ -60,3 +60,30 @@
   background-color: rgb(81, 81, 136);
   color: white;
 }
+.gate-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+.gate-target {
+  font-size: 28px;
+  font-weight: 700;
+}
+.gate-canvas {
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  touch-action: none;
+}
+.gate-actions {
+  display: flex;
+  gap: 10px;
+}
+.gate-msg {
+  margin: 0;
+  font-weight: 600;
+}
+.gate-hint {
+  color: #777;
+  font-size: 0.9rem;
+}
