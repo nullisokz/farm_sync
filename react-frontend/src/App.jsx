@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import './App.css'
 import DrawingGate from './DrawingGate'
+import { API_BASE } from "./lib/apiBase";
 
 function App() {
   const [verified, setVerified] = useState(false);
@@ -17,7 +18,7 @@ function App() {
 
   async function handlePredict() {
     try {
-      const res = await fetch("http://localhost:5000/predict", {
+      const res = await fetch(`${API_BASE}/predict`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ N, P, K, humidity, ph, rainfall, temperature, name }),
@@ -38,7 +39,7 @@ function App() {
       <div className="main">
         <h1>AI-check</h1>
         <p>För att komma in: rita rätt siffra.</p>
-        <DrawingGate apiBase="http://localhost:5000" onPassed={() => setVerified(true)} />
+        <DrawingGate apiBase={API_BASE} onPassed={() => setVerified(true)} />
       </div>
     );
   }

@@ -1,5 +1,4 @@
-# numbers.py
-# Träna en MNIST-modell och spara till ./models (ExtraTrees + StandardScaler)
+
 
 from sklearn.datasets import fetch_openml
 from sklearn.model_selection import train_test_split
@@ -13,7 +12,7 @@ def main():
     os.makedirs("models", exist_ok=True)
 
     print("[1/5] Laddar MNIST…")
-    # Tar 10k för snabb träning. Öka om du vill.
+    
     mnist = fetch_openml("mnist_784", version=1, cache=True, as_frame=False)
     X = mnist["data"][:10000]
     y = mnist["target"][:10000].astype(np.uint8)
@@ -34,7 +33,7 @@ def main():
 
     print("[4/5] Tränar ExtraTrees…")
     clf = ExtraTreesClassifier(
-        n_estimators=200,           # snabbrt + bra
+        n_estimators=200,           
         max_depth=None,
         n_jobs=-1,
         random_state=42

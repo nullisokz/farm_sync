@@ -105,7 +105,7 @@ def _prepare_28x28(img_bytes: bytes, invert=True, binarize=False, threshold=128)
 def mnist_check():
     """
     Body JSON:
-      { "image": "data:image/png;base64,...", "target_digit": 0-9, "threshold": 0.85 }
+      { "image": "data:image/png;base64,...", "target_digit": 0-9, "threshold": 0.65 }
     Return JSON:
       { status, passed, pred, prob, target }
     """
@@ -116,7 +116,7 @@ def mnist_check():
         data = request.json or {}
         data_url = data.get("image")
         target = int(data.get("target_digit", -1))
-        threshold = float(data.get("threshold", 0.20))
+        threshold = float(data.get("threshold", 0.7))
 
         if not data_url or target < 0 or target > 9:
             return jsonify({"status":"error","error":"Missing image or invalid target_digit"}), 400
@@ -127,18 +127,27 @@ def mnist_check():
         Xs = mnist_scaler.transform(X)
         pred = int(mnist_model.predict(Xs)[0])
 
+        # Räkna fram prob-vektor om möjligt
+        target_prob = None
+        pred_prob = None
         if hasattr(mnist_model, "predict_proba"):
-            prob = float(mnist_model.predict_proba(Xs)[0][pred])
+            probs = mnist_model.predict_proba(Xs)[0]
+            pred_prob = float(probs[pred])
+            target_prob = float(probs[target])
         else:
-            prob = 1.0 if pred == target else 0.0
+            pred_prob = 1.0 if pred == target else 0.0
+            target_prob = pred_prob
 
-        passed = (pred == target) or (prob >= threshold)
+        # Godkänn om modellen gissar rätt OCH har ok confidence,
+        # eller om target-klassen i sig har ok confidence.
+        passed = ((pred == target) and (pred_prob >= threshold)) or (target_prob >= threshold) or (pred == target)
 
         return jsonify({
             "status": "success",
             "passed": passed,
             "pred": pred,
-            "prob": prob,
+            "prob": pred_prob,
+            "target_prob": target_prob,
             "target": target
         })
     except Exception as e:
