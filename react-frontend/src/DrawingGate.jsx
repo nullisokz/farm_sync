@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
+import { API_BASE } from "./lib/apiBase";
 
-export default function DrawingGate({ apiBase = "http://localhost:5000", onPassed }) {
+export default function DrawingGate({ apiBase = API_BASE, onPassed }) {
   const canvasRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [target, setTarget] = useState(() => Math.floor(Math.random() * 10));
@@ -22,7 +23,7 @@ export default function DrawingGate({ apiBase = "http://localhost:5000", onPasse
     const rect = canvasRef.current.getBoundingClientRect();
     const client = e.touches ? e.touches[0] : e;
     return { x: client.clientX - rect.left, y: client.clientY - rect.top };
-    }
+  }
 
   function handleDown(e) {
     e.preventDefault();
@@ -74,10 +75,12 @@ export default function DrawingGate({ apiBase = "http://localhost:5000", onPasse
 
       if (data.status === "success") {
         if (data.passed) {
-          setMsg(`✅ Rätt! ${data.pred} (p=${data.prob.toFixed(2)}).`);
+          const p = typeof data.prob === "number" ? data.prob.toFixed(2) : "–";
+          setMsg(`✅ Rätt! ${data.pred} (p=${p}).`);
           onPassed?.();
         } else {
-          setMsg(`❌ Blev ${data.pred} (p=${data.prob?.toFixed(2) ?? "–"}). Försök igen!`);
+          const p = typeof data.prob === "number" ? data.prob.toFixed(2) : "–";
+          setMsg(`❌ Blev ${data.pred} (p=${p}). Försök igen!`);
         }
       } else {
         setMsg(`Fel: ${data.error || "okänt fel"}`);
