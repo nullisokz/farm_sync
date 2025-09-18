@@ -2,6 +2,7 @@ import { useState } from 'react'
 import './App.css'
 import DrawingGate from './DrawingGate'
 import { API_BASE } from "./lib/apiBase";
+import cropImageMap from './assets/cropImageMap';
 
 import cropImageMap from './assets/cropImageMap'
 

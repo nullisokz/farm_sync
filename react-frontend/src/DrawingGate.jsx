@@ -65,7 +65,7 @@ export default function DrawingGate({ apiBase = API_BASE, onPassed }) {
       sctx.drawImage(src, 0, 0, 28, 28);
       const dataUrl = small.toDataURL("image/png");
 
-      const res = await fetch(`${apiBase}/mnist/check`, {
+      const res = await fetch(`${apiBase}/api/mnist/check`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ image: dataUrl, target_digit: target, threshold: 0.85 }),
