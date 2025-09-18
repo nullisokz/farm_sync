@@ -1,5 +1,5 @@
 # numbers.py
-# Träna en MNIST-modell och spara till ./models (ExtraTrees + StandardScaler)
+# Train a MNIST model and save to ./models (ExtraTrees + StandardScaler)
 
 from sklearn.datasets import fetch_openml
 from sklearn.model_selection import train_test_split
@@ -12,29 +12,29 @@ import joblib, os
 def main():
     os.makedirs("models", exist_ok=True)
 
-    print("[1/5] Laddar MNIST…")
-    # Tar 10k för snabb träning. Öka om du vill.
+    print("[1/5] Loading MNIST…")
+    # Takes 10k for quick training. Increase if you want.
     mnist = fetch_openml("mnist_784", version=1, cache=True, as_frame=False)
-    X = mnist["data"][:10000]
-    y = mnist["target"][:10000].astype(np.uint8)
+    X = mnist["data"][:70000]
+    y = mnist["target"][:70000].astype(np.uint8)
 
     print("[2/5] Train/val/test split…")
     X_train_val, X_test, y_train_val, y_test = train_test_split(
-        X, y, test_size=2000, random_state=42, stratify=y
+        X, y, test_size=0.15, random_state=42, stratify=y
     )
     X_train, X_val, y_train, y_val = train_test_split(
-        X_train_val, y_train_val, test_size=2000, random_state=42, stratify=y_train_val
+        X_train_val, y_train_val, test_size=0.20, random_state=42, stratify=y_train_val
     )
 
-    print("[3/5] Skalar features…")
+    print("[3/5] Scaling features…")
     scaler = StandardScaler()
     X_train_s = scaler.fit_transform(X_train)
     X_val_s = scaler.transform(X_val)
     X_test_s = scaler.transform(X_test)
 
-    print("[4/5] Tränar ExtraTrees…")
+    print("[4/5] Training ExtraTrees…")
     clf = ExtraTreesClassifier(
-        n_estimators=200,           # snabbrt + bra
+        n_estimators=200,           # fast + good
         max_depth=None,
         n_jobs=-1,
         random_state=42
@@ -46,7 +46,7 @@ def main():
 
     test_acc = accuracy_score(y_test, clf.predict(X_test_s))
     print(f"Test-accuracy: {test_acc:.4f}")
-    print("\nKlassificeringsrapport (test):")
+    print("\nClassification report (test):")
     print(classification_report(y_test, clf.predict(X_test_s)))
 
     print("[5/5] Sparar modell och scaler…")
