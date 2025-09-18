@@ -7,9 +7,11 @@ from PIL import Image, ImageOps
 import base64, io
 import sqlite3
 
+#Instanciate flask-app and CORS(Sharing policy) 
 app = Flask(__name__)
 CORS(app)
 
+##Paths for models and scaler
 current_dir = os.path.dirname(os.path.abspath(__file__))
 model = joblib.load(os.path.join(current_dir, "models/random_forest_crop.joblib"))
 scaler = joblib.load(os.path.join(current_dir, "models/scaler.joblib"))
@@ -23,11 +25,14 @@ try:
 except Exception as e:
     print(f"[MNIST] Warning: could not load model/scaler: {e}")
 
+
+# Database-connection function
 def get_connection():
     conn = sqlite3.connect("predictions.db")
     conn.row_factory = sqlite3.Row
     return conn
 
+# Helper-function for database inserts
 def Write_to_db(data, prediction):
     try:
         conn = get_connection()
@@ -54,8 +59,8 @@ def Write_to_db(data, prediction):
         print(f"db error : {e}")
         return False
 
-
-@app.route("/predict", methods=['POST'])
+#Route for handling prediction from frontend
+@app.route("/api/predict", methods=['POST'])
 def predict():
     try:
         data = request.json
@@ -73,10 +78,13 @@ def predict():
         features_scaled = scaler.transform(features)
         prediction = model.predict(features_scaled)
 
+        #Write result and data to db
         Write_to_db(data,prediction[0])
 
+        #make the first letter capitilitez of the result (crop)
         prediction_cap = prediction[0].capitalize()
 
+        #sends back json with result and http status
         return jsonify({
             'prediction': prediction_cap,
             'status': "success"
@@ -106,11 +114,11 @@ def _prepare_28x28(img_bytes: bytes, invert=True, binarize=False, threshold=128)
     X = arr2d.reshape(1, -1)  # (1, 784)
     return X, arr2d
 
-@app.route("/mnist/check", methods=["POST"])
+@app.route("/api/mnist/check", methods=["POST"])
 def mnist_check():
     """
     Body JSON:
-      { "image": "data:image/png;base64,...", "target_digit": 0-9, "threshold": 0.85 }
+      { "image": "data:image/png;base64,...", "target_digit": 0-9, "threshold": 0.65 }
     Return JSON:
       { status, passed, pred, prob, target }
     """
@@ -121,7 +129,7 @@ def mnist_check():
         data = request.json or {}
         data_url = data.get("image")
         target = int(data.get("target_digit", -1))
-        threshold = float(data.get("threshold", 0.20))
+        threshold = float(data.get("threshold", 0.7))
 
         if not data_url or target < 0 or target > 9:
             return jsonify({"status":"error","error":"Missing image or invalid target_digit"}), 400
@@ -132,18 +140,27 @@ def mnist_check():
         Xs = mnist_scaler.transform(X)
         pred = int(mnist_model.predict(Xs)[0])
 
+        # Räkna fram prob-vektor om möjligt
+        target_prob = None
+        pred_prob = None
         if hasattr(mnist_model, "predict_proba"):
-            prob = float(mnist_model.predict_proba(Xs)[0][pred])
+            probs = mnist_model.predict_proba(Xs)[0]
+            pred_prob = float(probs[pred])
+            target_prob = float(probs[target])
         else:
-            prob = 1.0 if pred == target else 0.0
+            pred_prob = 1.0 if pred == target else 0.0
+            target_prob = pred_prob
 
-        passed = (pred == target) or (prob >= threshold)
+        # Godkänn om modellen gissar rätt OCH har ok confidence,
+        # eller om target-klassen i sig har ok confidence.
+        passed = ((pred == target) and (pred_prob >= threshold)) or (target_prob >= threshold) or (pred == target)
 
         return jsonify({
             "status": "success",
             "passed": passed,
             "pred": pred,
-            "prob": prob,
+            "prob": pred_prob,
+            "target_prob": target_prob,
             "target": target
         })
     except Exception as e:
