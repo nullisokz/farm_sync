@@ -7,9 +7,11 @@ from PIL import Image, ImageOps
 import base64, io
 import sqlite3
 
+#Instanciate flask-app and CORS(Sharing policy) 
 app = Flask(__name__)
 CORS(app)
 
+##Paths for models and scaler
 current_dir = os.path.dirname(os.path.abspath(__file__))
 model = joblib.load(os.path.join(current_dir, "models/random_forest_crop.joblib"))
 scaler = joblib.load(os.path.join(current_dir, "models/scaler.joblib"))
@@ -23,11 +25,14 @@ try:
 except Exception as e:
     print(f"[MNIST] Warning: could not load model/scaler: {e}")
 
+
+# Database-connection function
 def get_connection():
     conn = sqlite3.connect("predictions.db")
     conn.row_factory = sqlite3.Row
     return conn
 
+# Helper-function for database inserts
 def Write_to_db(data, prediction):
     try:
         conn = get_connection()
@@ -54,7 +59,7 @@ def Write_to_db(data, prediction):
         print(f"db error : {e}")
         return False
 
-
+#Route for handling prediction from frontend
 @app.route("/api/predict", methods=['POST'])
 def predict():
     try:
@@ -68,10 +73,13 @@ def predict():
         features_scaled = scaler.transform(features)
         prediction = model.predict(features_scaled)
 
+        #Write result and data to db
         Write_to_db(data,prediction[0])
 
+        #make the first letter capitilitez of the result (crop)
         prediction_cap = prediction[0].capitalize()
 
+        #sends back json with result and http status
         return jsonify({
             'prediction': prediction_cap,
             'status': "success"
